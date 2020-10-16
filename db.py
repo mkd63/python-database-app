@@ -29,3 +29,6 @@ class Database:
                 raise e
             finally:
                 LOGGER.info('Connection opened successfully.')
+
+db = Database({DATABASE_HOST: "localhost",DATABASE_USERNAME: "postgres",DATABASE_PASSWORD: "aahaNoob63",DATABASE_PORT: 5432,DATABASE_NAME: "first_python"});
+Database.connect();
