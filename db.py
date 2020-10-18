@@ -1,9 +1,7 @@
 from loguru import logger
 import psycopg2
-import index
 
 class Database:
-
     def __init__(self, config):
         self.host = config.DATABASE_HOST
         self.username = config.DATABASE_USERNAME
@@ -38,7 +36,7 @@ class Database:
             return records
 
     def create_tables(self,query):
-        """ create tables in the PostgreSQL database"""
+        """ create tables in the Postgres database"""
 
 
         with self.conn.cursor() as cur:
@@ -56,15 +54,43 @@ class Database:
                 if self.conn is not None:
                     self.conn.close()
 
-db = Database(index)
-db.connect()
-db.create_tables(
-"""
-    CREATE TABLE users (
-            user_id SERIAL PRIMARY KEY,
-            user_name VARCHAR(255) NOT NULL,
-            password VARCHAR(255) NOT NULL,
-            user_email VARCHAR(255) NOT NULL
-        )
-"""
-)
+    def insert(self,user_id,user_name,password,user_email):
+        try:
+            cursor = self.conn.cursor()
+            insert_query = """ INSERT INTO users (user_id, user_name, password, user_email) VALUES (%s,%s,%s,%s)"""
+            data = (user_id, user_name, password, user_email)
+            cursor.execute(insert_query, data)
+
+            self.conn.commit()
+            count = cursor.rowcount
+            logger.info("Registered successfully")
+
+        except (Exception, psycopg2.Error) as error :
+            if(self.conn):
+                print("Failed to insert record into mobile table", error)
+
+        finally:
+            #closing database connection.
+            if self.conn:
+                self.conn.close()
+                logger.info('Database connection closed.')
+
+    def run_query(self, query):
+        try:
+            with self.conn.cursor() as cur:
+                if 'SELECT' in query:
+                    records = []
+                    cur.execute(query)
+                    result = cur.fetchall()
+                    for row in result:
+                        records.append(row)
+                    cur.close()
+                    return records
+                else:
+                    result = cur.execute(query)
+                    self.conn.commit()
+                    affected = f"{cur.rowcount} rows affected."
+                    cur.close()
+                    return affected
+        except psycopg2.DatabaseError as e:
+            print(e)
