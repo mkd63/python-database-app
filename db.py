@@ -67,20 +67,41 @@ class Database:
 
         except (Exception, psycopg2.Error) as error :
             if(self.conn):
-                print("Failed to insert record into mobile table", error)
+                print("Failed to insert record into users", error)
 
-        finally:
-            #closing database connection.
-            if self.conn:
-                self.conn.close()
-                logger.info('Database connection closed.')
+    def update(self,user_id,user_detail,key):
+        try:
+            cursor = self.conn.cursor()
+            update_query = """ Update users set %s = %s where id = %s """
+            if(key==1):
+                data = ("user_name",user_detail,user_id)
+            elif(key==2):
+                data = ("password",user_detail,user_id)
+            else:
+                data = ("user_email",user_detail,user_id)
 
-    def run_query(self, query):
+            cursor.execute(update_query, data)
+
+            self.conn.commit()
+            count = cursor.rowcount
+            logger.info("Updated successfully")
+
+        except (Exception, psycopg2.Error) as error :
+            if(self.conn):
+                print("Failed to update record into users", error)
+
+    def close_Connection(self):
+        if self.conn:
+            self.conn.close()
+            logger.info('Database connection closed.')
+
+
+    def run_query(self, query,data):
         try:
             with self.conn.cursor() as cur:
                 if 'SELECT' in query:
                     records = []
-                    cur.execute(query)
+                    cur.execute(query,data)
                     result = cur.fetchall()
                     for row in result:
                         records.append(row)
