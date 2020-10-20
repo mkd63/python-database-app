@@ -28,7 +28,6 @@ class Database:
 
     def select_rows(self, query):
         """Run a SQL query to select rows from table."""
-        self.open_connection()
         with self.conn.cursor() as cur:
             cur.execute(query)
             records = [row for row in cur.fetchall()]
@@ -63,7 +62,7 @@ class Database:
 
             self.conn.commit()
             count = cursor.rowcount
-            logger.info("Registered successfully")
+            logger.success("Registered successfully")
 
         except (Exception, psycopg2.Error) as error :
             if(self.conn):
@@ -72,12 +71,14 @@ class Database:
     def update(self,user_id,user_detail,key):
         try:
             cursor = self.conn.cursor()
-            update_query = """ Update users set %s = %s where id = %s """
             if(key==1):
-                data = ("user_name",user_detail,user_id)
+                update_query = """ Update users set user_name = %s where user_id = %s """
+                data = (user_detail,user_id)
             elif(key==2):
-                data = ("password",user_detail,user_id)
+                update_query = """ Update users set password = %s where user_id = %s """
+                data = (user_detail,user_id)
             else:
+                update_query = """ Update users set user_email = %s where user_id = %s """
                 data = ("user_email",user_detail,user_id)
 
             cursor.execute(update_query, data)
@@ -89,6 +90,20 @@ class Database:
         except (Exception, psycopg2.Error) as error :
             if(self.conn):
                 print("Failed to update record into users", error)
+
+    def delete(self,id):
+        try:
+            cursor = self.conn.cursor()
+            delete_query = """Delete from users where user_id = %s"""
+            cursor.execute(delete_query, (id, ))
+
+            self.conn.commit()
+            count = cursor.rowcount
+            logger.info(count, "Record deleted successfully ")
+
+        except (Exception, psycopg2.Error) as error :
+            if(self.conn):
+                print("Failed to delete record from users. Error:", error)
 
     def close_Connection(self):
         if self.conn:
