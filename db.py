@@ -79,7 +79,7 @@ class Database:
                 data = (user_detail,user_id)
             else:
                 update_query = """ Update users set user_email = %s where user_id = %s """
-                data = ("user_email",user_detail,user_id)
+                data = (user_detail,user_id)
 
             cursor.execute(update_query, data)
 
@@ -94,8 +94,10 @@ class Database:
     def delete(self,id):
         try:
             cursor = self.conn.cursor()
-            delete_query = """Delete from users where user_id = %s"""
-            cursor.execute(delete_query, (id, ))
+            delete_query = """ Delete from users where user_id = %s """
+
+            print(id)
+            cursor.execute(delete_query, (id,))
 
             self.conn.commit()
             count = cursor.rowcount

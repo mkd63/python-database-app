@@ -93,7 +93,7 @@ def mainApp(user):
             db_instance.connect()
             db_instance.delete(user[0])
             db_instance.close_Connection()
-            mainApp(user)
+            exit()
 
         elif inp == "l":
             startApp()
