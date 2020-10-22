@@ -56,7 +56,6 @@ def mainApp(user):
     print(
     """
         press p to update any of your details
-        press d to delete your account
         press l to logout
         press e to exit
     """
@@ -87,12 +86,13 @@ def mainApp(user):
             db_instance.close_Connection()
             mainApp(user)
 
-        elif inp == "d":
-            db_instance = Database(config)
-            db_instance.connect()
-            db_instance.delete(user[0])
-            db_instance.close_Connection()
-            exit()
+        #elif inp == "d":
+        #    db_instance = Database(config)
+        #    db_instance.connect()
+        #    db_instance.delete(user[0])
+
+        #    db_instance.close_Connection()
+        #    exit()
 
         elif inp == "l":
             startApp()
@@ -100,6 +100,10 @@ def mainApp(user):
 
         elif inp == "e":
             exit()
+
+        else:
+            print("Invalid Inp")
+
 
 def login():
     print("Login")

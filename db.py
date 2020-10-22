@@ -40,11 +40,8 @@ class Database:
 
         with self.conn.cursor() as cur:
             try:
-                # execute the given commands
                 cur.execute(query)
-                # close communication with the PostgreSQL database server
                 cur.close()
-                # commit the changes
                 self.conn.commit()
             except (Exception, psycopg2.DatabaseError) as error:
                 print(error)
@@ -84,7 +81,6 @@ class Database:
             cursor.execute(update_query, data)
 
             self.conn.commit()
-            count = cursor.rowcount
             logger.info("Updated successfully")
 
         except (Exception, psycopg2.Error) as error :
@@ -94,13 +90,12 @@ class Database:
     def delete(self,id):
         try:
             cursor = self.conn.cursor()
-            delete_query = """ Delete from users where user_id = %d """
+            delete_query = """ Delete from users where user_email = %s """
 
             print(id)
             cursor.execute(delete_query, (id,))
 
             self.conn.commit()
-            count = cursor.rowcount
             logger.info(count, "Record deleted successfully ")
 
         except (Exception, psycopg2.Error) as error :
@@ -124,11 +119,6 @@ class Database:
                         records.append(row)
                     cur.close()
                     return records
-                else:
-                    result = cur.execute(query)
-                    self.conn.commit()
-                    affected = f"{cur.rowcount} rows affected."
-                    cur.close()
-                    return affected
+
         except psycopg2.DatabaseError as e:
             print(e)
