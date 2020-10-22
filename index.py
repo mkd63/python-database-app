@@ -6,7 +6,6 @@ import re
 
 def validateEmail(email):
     regex = '^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$'
-    # for custom mails use: '^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w+$'
     if(re.search(regex,email)):
         return True
     else:
@@ -14,7 +13,7 @@ def validateEmail(email):
         return False
 
 def validatePass(password):
-    reg = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!#%*?&]{6,20}$"
+    reg = "^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$"
     pat = re.compile(reg)
     mat = re.search(pat, password)
     if mat:
@@ -33,7 +32,6 @@ def reg():
         new_user_name = input("Enter Your username: ")
         new_user_password = getpass()
         validPass = validatePass(new_user_password)
-        print(validPass)
 
     db_instance = Database(config)
     db_instance.connect()
@@ -60,6 +58,7 @@ def mainApp(user):
         press p to update any of your details
         press d to delete your account
         press l to logout
+        press e to exit
     """
     )
     inp = input("  Enter Your option:  ")
@@ -99,17 +98,25 @@ def mainApp(user):
             startApp()
             break
 
+        elif inp == "e":
+            exit()
+
 def login():
-    print("login")
-    login_name = input("Enter your username: ")
-    login_pass = getpass()
-    db_instance = Database(config)
-    db_instance.connect()
-    data = (login_name, login_pass)
-    find = db_instance.run_query("""SELECT * from users WHERE user_name = %s AND password = %s""",data)
-    if len(find) > 0:
-        logger.success("Logged In successfully")
-    mainApp(find[0])
+    print("Login")
+    while(True):
+        login_name = input("Enter your username: ")
+        login_pass = getpass()
+        db_instance = Database(config)
+        db_instance.connect()
+        data = (login_name, login_pass)
+        find = db_instance.run_query("""SELECT * from users WHERE user_name = %s AND password = %s""",data)
+        if len(find) > 0:
+            logger.success("Logged In successfully")
+            mainApp(find[0])
+            break;
+        else:
+            logger.error("Invalid Id or password")
+
 
 def startApp():
     print(

@@ -94,7 +94,7 @@ class Database:
     def delete(self,id):
         try:
             cursor = self.conn.cursor()
-            delete_query = """ Delete from users where user_id = %s """
+            delete_query = """ Delete from users where user_id = %d """
 
             print(id)
             cursor.execute(delete_query, (id,))
